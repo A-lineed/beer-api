@@ -40,33 +40,35 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class BeerServiceTest {
 
-    private static final long INVALID_BEER_ID = 1L;
+	private static final long INVALID_BEER_ID = 1L;
 
-    @Mock
-    private BeerRepository beerRepository;
+	@Mock
+	private BeerRepository beerRepository;
 
-    private BeerMapper beerMapper = BeerMapper.INSTANCE;
+	private BeerMapper beerMapper = BeerMapper.INSTANCE;
 
-    @InjectMocks
-    private BeerService beerService;
-    
-    @Test
-    void whenBeerInformedThenItShouldBeCreated() throws BeerAlreadyRegisteredException { // Método de criar a cerveja com sucesso
-    
-    	//given
-    	BeerDTO beerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
-    	Beer expectedSaveBeer = beerMapper.toModel(beerDTO);
-    	
-    	//when 
-    	when(beerRepository.findByName(beerDTO.getName())).thenReturn(Optional.empty());
-    	when(beerRepository.save(expectedSaveBeer)).thenReturn(expectedSaveBeer);
-    	
-    	//then 
-    	BeerDTO createdBeerDTO = beerService.createBeer(beerDTO);
-    	
-    	assertEquals(beerDTO.getId(), createdBeerDTO.getId());
-    	assertEquals(beerDTO.getName(), createdBeerDTO.getName());
-    	
-    }
-    
+	@InjectMocks
+	private BeerService beerService;
+
+	@Test
+	void whenBeerInformedThenItShouldBeCreated() throws BeerAlreadyRegisteredException { // Método de criar a cerveja
+																							// com sucesso
+
+		// given
+		BeerDTO expectedBeerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
+		Beer expectedSaveBeer = beerMapper.toModel(expectedBeerDTO);
+
+		// when
+		when(beerRepository.findByName(expectedBeerDTO.getName())).thenReturn(Optional.empty());
+		when(beerRepository.save(expectedSaveBeer)).thenReturn(expectedSaveBeer);
+
+		// then
+		BeerDTO createdBeerDTO = beerService.createBeer(expectedBeerDTO);
+
+		assertThat(createdBeerDTO.getId(), is(equalTo(expectedBeerDTO.getId())));
+		assertThat(createdBeerDTO.getName(), is(equalTo(expectedBeerDTO.getName())));
+		assertThat(createdBeerDTO.getQuantity(), is(equalTo(expectedBeerDTO.getQuantity())));
+
+	}
+
 }
