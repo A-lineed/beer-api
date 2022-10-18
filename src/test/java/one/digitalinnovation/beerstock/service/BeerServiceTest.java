@@ -49,4 +49,24 @@ public class BeerServiceTest {
 
     @InjectMocks
     private BeerService beerService;
+    
+    @Test
+    void whenBeerInformedThenItShouldBeCreated() throws BeerAlreadyRegisteredException { // Método de criar a cerveja com sucesso
+    
+    	//given
+    	BeerDTO beerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
+    	Beer expectedSaveBeer = beerMapper.toModel(beerDTO);
+    	
+    	//when 
+    	when(beerRepository.findByName(beerDTO.getName())).thenReturn(Optional.empty());
+    	when(beerRepository.save(expectedSaveBeer)).thenReturn(expectedSaveBeer);
+    	
+    	//then 
+    	BeerDTO createdBeerDTO = beerService.createBeer(beerDTO);
+    	
+    	assertEquals(beerDTO.getId(), createdBeerDTO.getId());
+    	assertEquals(beerDTO.getName(), createdBeerDTO.getName());
+    	
+    }
+    
 }
