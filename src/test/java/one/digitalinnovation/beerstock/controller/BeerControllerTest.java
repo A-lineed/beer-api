@@ -55,6 +55,8 @@ public class BeerControllerTest {
                 .setViewResolvers((s, locale) -> new MappingJackson2JsonView())
                 .build();
     }
+    
+    
 
     
 }
