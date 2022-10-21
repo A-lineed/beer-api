@@ -58,16 +58,17 @@ public class BeerControllerTest {
 	@Test
 	void whenPOSTIsCalledThenABeerIsCreated() throws Exception {
 		// given
-		BeerDTO beerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
+		BeerDTO beerDTO = BeerDTOBuilder.builder().build().toBeerDTO(); // Mockando a chamada do meu objeto DTO
 
 		// when
 		when(beerService.createBeer(beerDTO)).thenReturn(beerDTO);
 
 		// then
-		mockMvc.perform(post(BEER_API_URL_PATH).contentType(MediaType.APPLICATION_JSON).content(asJsonString(beerDTO)))
-				.andExpect(status().isCreated()).andExpect(jsonPath("$.name", is(beerDTO.getName())))
+		mockMvc.perform(post(BEER_API_URL_PATH).contentType(MediaType.APPLICATION_JSON).content(asJsonString(beerDTO))) // Passando como corpo a string de um Json
+				.andExpect(status().isCreated()).andExpect(jsonPath("$.name", is(beerDTO.getName()))) // Vai ser esperado um status como criado, retornando um nome, a marca e o tipo da cerveja
 				.andExpect(jsonPath("$.brand", is(beerDTO.getBrand())))
 				.andExpect(jsonPath("$.type", is(beerDTO.getType().toString())));
 	}
+	
 
 }
