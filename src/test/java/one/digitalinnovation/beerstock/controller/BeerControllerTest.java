@@ -64,24 +64,73 @@ public class BeerControllerTest {
 		when(beerService.createBeer(beerDTO)).thenReturn(beerDTO);
 
 		// then
-		mockMvc.perform(post(BEER_API_URL_PATH).contentType(MediaType.APPLICATION_JSON).content(asJsonString(beerDTO))) // Passando como corpo a string de um Json
-				.andExpect(status().isCreated()).andExpect(jsonPath("$.name", is(beerDTO.getName()))) // Vai ser esperado um status como criado, retornando um nome, a marca e o tipo da cerveja
+		mockMvc.perform(post(BEER_API_URL_PATH).contentType(MediaType.APPLICATION_JSON).content(asJsonString(beerDTO))) // Passando
+																														// como
+																														// corpo
+																														// a
+																														// string
+																														// de
+																														// um
+																														// Json
+				.andExpect(status().isCreated()).andExpect(jsonPath("$.name", is(beerDTO.getName()))) // Vai ser
+																										// esperado um
+																										// status como
+																										// criado,
+																										// retornando um
+																										// nome, a marca
+																										// e o tipo da
+																										// cerveja
 				.andExpect(jsonPath("$.brand", is(beerDTO.getBrand())))
 				.andExpect(jsonPath("$.type", is(beerDTO.getType().toString())));
 	}
-	
+
 	@Test
 	void whenPOSTIsCalledWithoutRequiredFieldThenAnErrorIsReturned() throws Exception {
 		// given
-		BeerDTO beerDTO = BeerDTOBuilder.builder().build().toBeerDTO(); 
-		beerDTO.setBrand(null); //Removendo a marca da cerveja
-
-		
+		BeerDTO beerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
+		beerDTO.setBrand(null); // Removendo a marca da cerveja
 
 		// then
-		mockMvc.perform(post(BEER_API_URL_PATH).contentType(MediaType.APPLICATION_JSON).content(asJsonString(beerDTO))) // Passando como corpo a string de um Json
+		mockMvc.perform(post(BEER_API_URL_PATH).contentType(MediaType.APPLICATION_JSON).content(asJsonString(beerDTO))) // Passando
+																														// como
+																														// corpo
+																														// a
+																														// string
+																														// de
+																														// um
+																														// Json
 				.andExpect(status().isBadRequest());
 	}
-	
 
+	@Test
+	void whenGETIsCalledWithValidNameThenOkStatusIsReturned() throws Exception {
+		// given
+		BeerDTO beerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
+
+		// when
+		when(beerService.findByName(beerDTO.getName())).thenReturn(beerDTO);
+
+		// then
+		mockMvc.perform(MockMvcRequestBuilders.get(BEER_API_URL_PATH + "/" + beerDTO.getName())
+				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(jsonPath("$.name", is(beerDTO.getName())))
+				.andExpect(jsonPath("$.brand", is(beerDTO.getBrand())))
+				.andExpect(jsonPath("$.type", is(beerDTO.getType().toString())));
+
+	}
+	@Test
+	void whenGETIsCalledWithoutRegisteredNameThenNotFoundStatusIsReturned() throws Exception {
+
+		// given
+		BeerDTO beerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
+
+		// when
+		when(beerService.findByName(beerDTO.getName())).thenThrow(BeerNotFoundException.class);
+
+		// then
+		mockMvc.perform(MockMvcRequestBuilders.get(BEER_API_URL_PATH + "/" + beerDTO.getName())
+				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
+			
+		
+	}
 }
