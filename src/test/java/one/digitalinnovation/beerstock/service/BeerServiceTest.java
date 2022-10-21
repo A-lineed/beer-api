@@ -51,8 +51,7 @@ public class BeerServiceTest {
 	private BeerService beerService;
 
 	@Test
-	void whenBeerInformedThenItShouldBeCreated() throws BeerAlreadyRegisteredException { // Método de criar a cerveja
-																							// com sucesso
+	void whenBeerInformedThenItShouldBeCreated() throws BeerAlreadyRegisteredException {
 
 		// given
 		BeerDTO expectedBeerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
@@ -70,19 +69,34 @@ public class BeerServiceTest {
 		assertThat(createdBeerDTO.getQuantity(), is(equalTo(expectedBeerDTO.getQuantity())));
 
 	}
-	
+
 	@Test
-    void whenAlreadyRegisteredBeerInformedThenAnExceptionShouldBeThrown() {
-        // given
-        BeerDTO expectedBeerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
-        Beer duplicatedBeer = beerMapper.toModel(expectedBeerDTO);
+	void whenAlreadyRegisteredBeerInformedThenAnExceptionShouldBeThrown() {
+		// given
+		BeerDTO expectedBeerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
+		Beer duplicatedBeer = beerMapper.toModel(expectedBeerDTO);
 
-        // when
-        when(beerRepository.findByName(expectedBeerDTO.getName())).thenReturn(Optional.of(duplicatedBeer));
+		// when
+		when(beerRepository.findByName(expectedBeerDTO.getName())).thenReturn(Optional.of(duplicatedBeer));
 
-        // then
-        assertThrows(BeerAlreadyRegisteredException.class, () -> beerService.createBeer(expectedBeerDTO));
-    }
+		// then
+		assertThrows(BeerAlreadyRegisteredException.class, () -> beerService.createBeer(expectedBeerDTO));
+	}
 
+	@Test
+	void whenValidBeerNameIsGivenThenReturnABeer() throws BeerNotFoundException {
+
+		// given
+		BeerDTO expectedFoundBeerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
+		Beer expectedFoundBeer = beerMapper.toModel(expectedFoundBeerDTO);
+		
+		//when 
+		when(beerRepository.findByName(expectedFoundBeer.getName())).thenReturn(Optional.of(expectedFoundBeer));
+		
+		//then 
+		BeerDTO foundBeerDTO = beerService.findByName(expectedFoundBeerDTO.getName());
+		
+		assertThat(foundBeerDTO, is(equalTo(expectedFoundBeerDTO)));
+	}
 
 }
